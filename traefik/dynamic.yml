@@ -1,0 +1,43 @@
+http:
+  middlewares:
+    auth-strip:
+      stripPrefix:
+        prefixes:
+          - "/api/auth"
+
+    movies-strip:
+      stripPrefix:
+        prefixes:
+          - "/api/movies"
+
+    jwt-auth:
+      forwardAuth:
+        address: "http://auth:8000/verify"
+        trustForwardHeader: true
+
+  routers:
+    auth-router:
+      rule: "PathPrefix(`/api/auth`)"
+      entryPoints: ["web"]
+      middlewares: ["auth-strip"]
+      service: "auth-svc"
+
+    movies-router:
+      rule: "PathPrefix(`/api/movies`)"
+      entryPoints: ["web"]
+      middlewares: ["jwt-auth", "movies-strip"]
+      service: "movies-svc"
+
+  services:
+    auth-svc:
+      loadBalancer:
+        servers:
+          - url: "http://auth:8000"
+
+    # ✅ Load balancing: 3 movie servers
+    movies-svc:
+      loadBalancer:
+        servers:
+          - url: "http://movies1:8000"
+          - url: "http://movies2:8000"
+          - url: "http://movies3:8000"

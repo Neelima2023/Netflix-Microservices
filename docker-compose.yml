@@ -1,0 +1,32 @@
+services:
+  traefik:
+    image: traefik:v3.1
+    ports:
+      - "8088:80"
+      - "8080:8080"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+
+  auth:
+    build: ./auth-service
+    environment:
+      - JWT_SECRET=dev-secret-change-me
+    ports:
+    - "8001:8000"
+
+  movies1:
+    build: ./movies-service
+    environment:
+      - INSTANCE_ID=movies1
+    ports:
+    - "8002:8000"
+  movies2:
+    build: ./movies-service
+    environment:
+      - INSTANCE_ID=movies2
+
+  movies3:
+    build: ./movies-service
+    environment:
+      - INSTANCE_ID=movies3
