@@ -35,3 +35,11 @@ def get_movie(movie_id: int):
         if m["id"] == movie_id:
             return {"instance": INSTANCE_ID, "movie": m}
     raise HTTPException(status_code=404, detail="Movie not found")
+
+@app.get("/")
+def root():
+    return {"message": "Movies service running", "instance": INSTANCE_ID}
+
+@app.get("/whoami")
+def whoami():
+    return {"instance": INSTANCE_ID}

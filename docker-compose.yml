@@ -1,32 +1,52 @@
 services:
   traefik:
     image: traefik:v3.1
+    container_name: netflix-traefik
     ports:
-      - "8088:80"
-      - "8080:8080"
+      - "8088:80"      # API Gateway entry point
+      - "8080:8080"    # Traefik dashboard
     volumes:
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    depends_on:
+      - auth
+      - movies1
+      - movies2
+      - movies3
+    restart: unless-stopped
 
   auth:
     build: ./auth-service
+    container_name: netflix-auth
     environment:
-      - JWT_SECRET=dev-secret-change-me
+      JWT_SECRET: dev-secret-change-me
     ports:
-    - "8001:8000"
+      - "8001:8000"    # Auth service direct access
+    restart: unless-stopped
 
   movies1:
     build: ./movies-service
+    container_name: netflix-movies1
     environment:
-      - INSTANCE_ID=movies1
+      INSTANCE_ID: movies1
     ports:
-    - "8002:8000"
+      - "8002:8000"    # Test: http://localhost:8002/health
+    restart: unless-stopped
+
   movies2:
     build: ./movies-service
+    container_name: netflix-movies2
     environment:
-      - INSTANCE_ID=movies2
+      INSTANCE_ID: movies2
+    ports:
+      - "8003:8000"    # Test: http://localhost:8003/health
+    restart: unless-stopped
 
   movies3:
     build: ./movies-service
+    container_name: netflix-movies3
     environment:
-      - INSTANCE_ID=movies3
+      INSTANCE_ID: movies3
+    ports:
+      - "8004:8000"    # Test: http://localhost:8004/health
+    restart: unless-stopped
