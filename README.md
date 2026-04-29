@@ -21,8 +21,13 @@ Multiple instances of services run independently
 Traffic is routed via an API Gateway
 Load is balanced automatically
 Authentication is handled securely using JWT tokens
+
+
 🏗️ Architecture
+
 ![Architecture Diagram](./architecture.png)
+
+
 API Gateway: Traefik (Routing + Load Balancing)
 Auth Service: FastAPI (JWT Authentication)
 Movies Service: FastAPI (Business Logic)
